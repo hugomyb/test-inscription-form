@@ -12,48 +12,49 @@ describe('InscriptionFormComponent', () => {
   });
 
   it('should render the form fields', () => {
-    expect(screen.getByLabelText(/Nom/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Prénom/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Date de naissance/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Ville/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Code Postal/i)).toBeInTheDocument();
+    expect(screen.getByLabelText('Nom :')).toBeTruthy();
+    expect(screen.getByLabelText('Prénom :')).toBeTruthy();
+    expect(screen.getByLabelText('Email :')).toBeTruthy();
+    expect(screen.getByLabelText('Date de naissance :')).toBeTruthy();
+    expect(screen.getByLabelText('Ville :')).toBeTruthy();
+    expect(screen.getByLabelText('Code Postal :')).toBeTruthy();
   });
 
   it('should disable the submit button if the form is invalid', () => {
     const submitButton = screen.getByRole('button', { name: /Sauvegarder/i });
-    expect(submitButton).toBeDisabled();
+    expect(submitButton.hasAttribute('disabled')).toBe(true);
   });
 
   it('should show error messages when fields are touched but empty', async () => {
-    const nomInput = screen.getByLabelText(/Nom/i);
-    fireEvent.blur(nomInput); // Simule le fait de quitter le champ sans le remplir
+    const nomInput = screen.getByLabelText('Nom :');
+    fireEvent.blur(nomInput);
 
-    expect(await screen.findByText('Le nom est requis.')).toBeInTheDocument();
+    expect(await screen.findByText('Le nom est requis.')).toBeTruthy();
   });
 
   it('should enable the submit button when the form is valid', async () => {
-    fireEvent.input(screen.getByLabelText(/Nom/i), { target: { value: 'Dupont' } });
-    fireEvent.input(screen.getByLabelText(/Prénom/i), { target: { value: 'Jean' } });
-    fireEvent.input(screen.getByLabelText(/Email/i), { target: { value: 'jean.dupont@example.com' } });
-    fireEvent.input(screen.getByLabelText(/Date de naissance/i), { target: { value: '2000-01-01' } });
-    fireEvent.input(screen.getByLabelText(/Ville/i), { target: { value: 'Paris' } });
-    fireEvent.input(screen.getByLabelText(/Code Postal/i), { target: { value: '75001' } });
+    fireEvent.input(screen.getByLabelText('Nom :'), { target: { value: 'Dupont' } });
+    fireEvent.input(screen.getByLabelText('Prénom :'), { target: { value: 'Jean' } });
+    fireEvent.input(screen.getByLabelText('Email :'), { target: { value: 'jean.dupont@example.com' } });
+    fireEvent.input(screen.getByLabelText('Date de naissance :'), { target: { value: '2000-01-01' } });
+    fireEvent.input(screen.getByLabelText('Ville :'), { target: { value: 'Paris' } });
+    fireEvent.input(screen.getByLabelText('Code Postal :'), { target: { value: '75001' } });
 
     const submitButton = screen.getByRole('button', { name: /Sauvegarder/i });
-    expect(submitButton).not.toBeDisabled();
+    expect(submitButton.hasAttribute('disabled')).toBe(false);
   });
 
   it('should show a success toaster message on form submission', async () => {
-    fireEvent.input(screen.getByLabelText(/Nom/i), { target: { value: 'Dupont' } });
-    fireEvent.input(screen.getByLabelText(/Prénom/i), { target: { value: 'Jean' } });
-    fireEvent.input(screen.getByLabelText(/Email/i), { target: { value: 'jean.dupont@example.com' } });
-    fireEvent.input(screen.getByLabelText(/Date de naissance/i), { target: { value: '2000-01-01' } });
-    fireEvent.input(screen.getByLabelText(/Ville/i), { target: { value: 'Paris' } });
-    fireEvent.input(screen.getByLabelText(/Code Postal/i), { target: { value: '75001' } });
+    fireEvent.input(screen.getByLabelText('Nom :'), { target: { value: 'Dupont' } });
+    fireEvent.input(screen.getByLabelText('Prénom :'), { target: { value: 'Jean' } });
+    fireEvent.input(screen.getByLabelText('Email :'), { target: { value: 'jean.dupont@example.com' } });
+    fireEvent.input(screen.getByLabelText('Date de naissance :'), { target: { value: '2000-01-01' } });
+    fireEvent.input(screen.getByLabelText('Ville :'), { target: { value: 'Paris' } });
+    fireEvent.input(screen.getByLabelText('Code Postal :'), { target: { value: '75001' } });
 
     fireEvent.click(screen.getByRole('button', { name: /Sauvegarder/i }));
 
-    expect(await screen.findByText('Inscription réussie !')).toBeInTheDocument();
+    const toasterMessage = await screen.findByText('Inscription réussie !');
+    expect(toasterMessage).toBeTruthy();
   });
 });
