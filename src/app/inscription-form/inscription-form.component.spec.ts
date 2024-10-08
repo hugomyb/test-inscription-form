@@ -44,6 +44,20 @@ describe('InscriptionFormComponent', () => {
     expect(submitButton.hasAttribute('disabled')).toBe(false);
   });
 
+  it('should show an error message when the age is less than 18', async () => {
+    fireEvent.input(screen.getByLabelText('Nom :'), { target: { value: 'Dupont' } });
+    fireEvent.input(screen.getByLabelText('Prénom :'), { target: { value: 'Jean' } });
+    fireEvent.input(screen.getByLabelText('Email :'), { target: { value: 'jean.dupont@example.com' } });
+    fireEvent.input(screen.getByLabelText('Date de naissance :'), { target: { value: '2010-01-01' } });
+    fireEvent.input(screen.getByLabelText('Ville :'), { target: { value: 'Paris' } });
+    fireEvent.input(screen.getByLabelText('Code Postal :'), { target: { value: '75001' } });
+
+    fireEvent.click(screen.getByRole('button', { name: /Sauvegarder/i }));
+
+    const errorMessage = await screen.findByText('Vous devez avoir au moins 18 ans.');
+    expect(errorMessage).toBeTruthy();
+  });
+
   it('should show a success toaster message on form submission', async () => {
     fireEvent.input(screen.getByLabelText('Nom :'), { target: { value: 'Dupont' } });
     fireEvent.input(screen.getByLabelText('Prénom :'), { target: { value: 'Jean' } });
