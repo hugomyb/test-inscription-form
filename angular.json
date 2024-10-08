@@ -71,7 +71,12 @@
           "builder": "@angular-devkit/build-angular:extract-i18n"
         },
         "deploy": {
-          "builder": "angular-cli-ghpages:deploy"
+          "builder": "angular-cli-ghpages:deploy",
+          "options": {
+            "repo": "https://github.com/hugomyb/test-inscription-form.git",
+            "branch": "gh-pages",
+            "dir": "dist/cours-1-1/browser"
+          }
         }
       }
     }
