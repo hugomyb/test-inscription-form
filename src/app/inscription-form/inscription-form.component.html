@@ -1,0 +1,45 @@
+<form [formGroup]="inscriptionForm" (ngSubmit)="onSubmit()">
+  <label for="nom">Nom :</label>
+  <input id="nom" formControlName="nom" type="text" />
+  <div *ngIf="nom?.invalid && (nom?.dirty || nom?.touched)">
+    <small *ngIf="nom?.errors?.['required']">Le nom est requis.</small>
+    <small *ngIf="nom?.errors?.['pattern']">Le nom ne doit pas contenir de chiffres ou de caractères spéciaux.</small>
+  </div>
+
+  <label for="prenom">Prénom :</label>
+  <input id="prenom" formControlName="prenom" type="text" />
+  <div *ngIf="prenom?.invalid && (prenom?.dirty || prenom?.touched)">
+    <small *ngIf="prenom?.errors?.['required']">Le prénom est requis.</small>
+    <small *ngIf="prenom?.errors?.['pattern']">Le prénom ne doit pas contenir de chiffres ou de caractères spéciaux.</small>
+  </div>
+
+  <label for="email">Email :</label>
+  <input id="email" formControlName="email" type="email" />
+  <div *ngIf="email?.invalid && (email?.dirty || email?.touched)">
+    <small *ngIf="email?.errors?.['required']">L'email est requis.</small>
+    <small *ngIf="email?.errors?.['email']">Le format de l'email est invalide.</small>
+  </div>
+
+  <label for="dateNaissance">Date de naissance :</label>
+  <input id="dateNaissance" formControlName="dateNaissance" type="date" />
+  <div *ngIf="dateNaissance?.invalid && (dateNaissance?.dirty || dateNaissance?.touched)">
+    <small *ngIf="dateNaissance?.errors?.['required']">La date de naissance est requise.</small>
+    <small *ngIf="dateNaissance?.errors?.['minAge']">Vous devez avoir au moins 18 ans.</small>
+  </div>
+
+  <label for="ville">Ville :</label>
+  <input id="ville" formControlName="ville" type="text" />
+  <div *ngIf="ville?.invalid && (ville?.dirty || ville?.touched)">
+    <small *ngIf="ville?.errors?.['required']">La ville est requise.</small>
+    <small *ngIf="ville?.errors?.['pattern']">La ville ne doit pas contenir de chiffres ou de caractères spéciaux.</small>
+  </div>
+
+  <label for="codePostal">Code Postal :</label>
+  <input id="codePostal" formControlName="codePostal" type="text" />
+  <div *ngIf="codePostal?.errors && (codePostal?.dirty || codePostal?.touched)">
+    <small *ngIf="codePostal?.errors?.['required']">Le code postal est requis.</small>
+    <small *ngIf="codePostal?.errors?.['pattern']">Le code postal doit être un nombre à 5 chiffres.</small>
+  </div>
+
+  <button type="submit" [disabled]="inscriptionForm.invalid">Sauvegarder</button>
+</form>

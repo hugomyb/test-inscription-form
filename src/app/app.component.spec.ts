@@ -1,29 +1,22 @@
-import { TestBed } from '@angular/core/testing';
-import { AppComponent } from './app.component';
+import {fireEvent, render} from '@testing-library/angular';
+import {AppComponent} from './app.component';
 
 describe('AppComponent', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AppComponent],
-    }).compileComponents();
+  it('should contain the h1 tag with "Test component"', async () => {
+    const {getByText} = await render(AppComponent);
+    expect(getByText('Hello Component')).toBeTruthy();
   });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
+  it('should increment the counter on button click', async () => {
+    const {getByText, getByRole} = await render(AppComponent);
 
-  it(`should have the 'cours-1-1' title`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('cours-1-1');
-  });
+    const button = getByRole('button');
+    const initialCounterText = getByText('0');
+    expect(initialCounterText).toBeTruthy();
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, cours-1-1');
+    fireEvent.click(button);
+
+    const incrementedCounterText = getByText('1');
+    expect(incrementedCounterText).toBeTruthy();
   });
 });
