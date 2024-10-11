@@ -1,0 +1,82 @@
+name: Build, Test and Deploy Angular Application
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    name: Run tests and collect coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npx jest --coverage
+
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  build_test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies, build, test, and generate docs
+        run: |
+          npm ci
+          npm run build --if-present
+          npm run test:coverage
+          npm run doc
+
+      - name: Prepare deployment folder
+        run: |
+          mkdir -p deploy-root
+          cp -r front/dist/cours-1-1/browser/* deploy-root/
+          cp -r front/docs deploy-root/docs
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v3
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: deploy-root
+          if-no-files-found: error
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{steps.deployment.output.page_url}}
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    needs: build_test
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
