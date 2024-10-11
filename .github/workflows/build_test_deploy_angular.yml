@@ -19,7 +19,7 @@ jobs:
         run: npm install
         working-directory: back
       - name: Deploy to Vercel
-        run: vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
+        run: vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
         working-directory: back
 
   test:
@@ -49,6 +49,7 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+    needs: build_test
 
   build_test:
     name: Build, Test and Generate Documentation (Front)
@@ -88,6 +89,7 @@ jobs:
         with:
           path: deploy-root
           if-no-files-found: error
+    needs: build_test
 
   deploy:
     name: Deploy to GitHub Pages
