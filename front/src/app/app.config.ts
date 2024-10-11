@@ -6,6 +6,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { routes } from './app.routes';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import {provideHttpClient} from '@angular/common/http';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
 
 /**
  * The main configuration object for the Angular application.
@@ -34,6 +36,12 @@ export const appConfig: ApplicationConfig = {
       BrowserAnimationsModule,
       ToastrModule.forRoot()
     ),
+
+    /**
+     * Provides the HttpClient service to make HTTP requests.
+     * Uses the default configuration for the HttpClient service.
+     */
+    provideHttpClient(),
 
     /**
      * Configures the location strategy to use the hash-based routing.

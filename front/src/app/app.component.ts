@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { InscriptionFormComponent } from './inscription-form/inscription-form.component';
-import { OnInit } from '@angular/core';
-import { initFlowbite } from 'flowbite';
+import {Component, ViewChild} from '@angular/core';
+import {RouterOutlet} from '@angular/router';
+import {InscriptionFormComponent} from './inscription-form/inscription-form.component';
+import {OnInit} from '@angular/core';
+import {initFlowbite} from 'flowbite';
+import {UsersTableComponent} from "./users-table/users-table.component";
 
 /**
  * Root component of the application.
@@ -11,7 +12,7 @@ import { initFlowbite } from 'flowbite';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, InscriptionFormComponent],
+  imports: [RouterOutlet, InscriptionFormComponent, UsersTableComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -21,8 +22,13 @@ export class AppComponent implements OnInit {
    * @type {string}
    */
   title = 'cours-1-1';
+  @ViewChild('listUsers') listUsers!: UsersTableComponent;
 
   ngOnInit(): void {
     initFlowbite();
+  }
+
+  receivedNewUser(event: any): void {
+    this.listUsers.fetchUsers();
   }
 }

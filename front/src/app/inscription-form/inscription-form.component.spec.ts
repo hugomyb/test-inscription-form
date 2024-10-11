@@ -1,74 +1,206 @@
-import { fireEvent, render, screen } from '@testing-library/angular';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { InscriptionFormComponent } from './inscription-form.component';
-import { ToastrModule } from 'ngx-toastr';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ToastrModule } from 'ngx-toastr';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { ApiService } from '../api.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('InscriptionFormComponent', () => {
+  let component: InscriptionFormComponent;
+  let fixture: ComponentFixture<InscriptionFormComponent>;
+  let httpTestingController: HttpTestingController;
+
   beforeEach(async () => {
-    await render(InscriptionFormComponent, {
-      imports: [ReactiveFormsModule, ToastrModule.forRoot(), BrowserAnimationsModule],
+    await TestBed.configureTestingModule({
+      imports: [
+        InscriptionFormComponent,
+        ReactiveFormsModule,
+        ToastrModule.forRoot(),
+        HttpClientTestingModule,
+        BrowserAnimationsModule
+      ],
+      providers: [ApiService]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(InscriptionFormComponent);
+    component = fixture.componentInstance;
+    httpTestingController = TestBed.inject(HttpTestingController);
+    fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    httpTestingController.verify();
+  });
+
+  it('should create the component', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should have an invalid form when required fields are empty', () => {
+    expect(component.inscriptionForm.valid).toBeFalsy();
+  });
+
+  it('should validate email format', () => {
+    const email = component.email;
+    email?.setValue('invalid-email');
+    expect(email?.valid).toBeFalsy();
+
+    email?.setValue('valid@example.com');
+    expect(email?.valid).toBeTruthy();
+  });
+
+  it('should validate age to be at least 18 years', () => {
+    const dateNaissance = component.dateNaissance;
+    dateNaissance?.setValue('2010-01-01'); // User under 18 years old
+    expect(dateNaissance?.valid).toBeFalsy();
+    expect(dateNaissance?.errors?.['minAge']).toBeTruthy();
+
+    dateNaissance?.setValue('2000-01-01'); // User at least 18 years old
+    expect(dateNaissance?.valid).toBeTruthy();
+  });
+
+  it('should enable the submit button when the form is valid', () => {
+    component.inscriptionForm.setValue({
+      nom: 'Dupont',
+      prenom: 'Jean',
+      email: 'jean.dupont@example.com',
+      dateNaissance: '2000-01-01',
+      ville: 'Paris',
+      codePostal: '75001'
+    });
+    fixture.detectChanges();
+
+    const submitButton = fixture.nativeElement.querySelector('button[type="submit"]');
+    expect(submitButton.disabled).toBe(false);
+  });
+
+  it('should reset the form after a successful submission', () => {
+    component.inscriptionForm.setValue({
+      nom: 'Dupont',
+      prenom: 'Jean',
+      email: 'jean.dupont@example.com',
+      dateNaissance: '2000-01-01',
+      ville: 'Paris',
+      codePostal: '75001'
+    });
+    fixture.detectChanges();
+
+    const submitButton = fixture.nativeElement.querySelector('button[type="submit"]');
+    submitButton.click();
+
+    const req = httpTestingController.expectOne('http://localhost:3000/api/users');
+    req.flush({ message: 'Utilisateur créé avec succès' });
+
+    fixture.detectChanges();
+
+    expect(component.inscriptionForm.pristine).toBe(true);
+    expect(component.inscriptionForm.value).toEqual({
+      nom: '',
+      prenom: '',
+      email: '',
+      dateNaissance: '',
+      ville: '',
+      codePostal: ''
     });
   });
 
-  it('should render the form fields', () => {
-    expect(screen.getByLabelText('Nom :')).toBeTruthy();
-    expect(screen.getByLabelText('Prénom :')).toBeTruthy();
-    expect(screen.getByLabelText('Email :')).toBeTruthy();
-    expect(screen.getByLabelText('Date de naissance :')).toBeTruthy();
-    expect(screen.getByLabelText('Ville :')).toBeTruthy();
-    expect(screen.getByLabelText('Code Postal :')).toBeTruthy();
+  it('should display a success message on successful form submission', () => {
+    component.inscriptionForm.setValue({
+      nom: 'Dupont',
+      prenom: 'Jean',
+      email: 'jean.dupont@example.com',
+      dateNaissance: '2000-01-01',
+      ville: 'Paris',
+      codePostal: '75001'
+    });
+    fixture.detectChanges();
+
+    const submitButton = fixture.nativeElement.querySelector('button[type="submit"]');
+    submitButton.click();
+
+    const req = httpTestingController.expectOne('http://localhost:3000/api/users');
+    req.flush({ message: 'Utilisateur créé avec succès' });
+
+    fixture.detectChanges();
+
+    const toast = document.querySelector('.toast-message');
+    expect(toast?.textContent).toContain('Inscription réussie !');
   });
 
-  it('should disable the submit button if the form is invalid', () => {
-    const submitButton = screen.getByRole('button', { name: /Confirmer/i });
-    expect(submitButton.hasAttribute('disabled')).toBe(true);
+  it('should display a generic error message for server error', () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    component.inscriptionForm.setValue({
+      nom: 'Dupont',
+      prenom: 'Jean',
+      email: 'jean.dupont@example.com',
+      dateNaissance: '2000-01-01',
+      ville: 'Paris',
+      codePostal: '75001'
+    });
+    fixture.detectChanges();
+
+    const submitButton = fixture.nativeElement.querySelector('button[type="submit"]');
+    submitButton.click();
+
+    const req = httpTestingController.expectOne('http://localhost:3000/api/users');
+    req.flush({ message: 'Internal Server Error' }, { status: 500, statusText: 'Server Error' });
+
+    fixture.detectChanges();
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Erreur lors de la création de l\'utilisateur', expect.anything());
+
+    const errorToast = document.querySelector('.toast-message');
+    expect(errorToast?.textContent).toContain('Une erreur est survenue lors de l\'inscription.');
+
+    consoleErrorSpy.mockRestore();
   });
 
-  it('should show error messages when fields are touched but empty', async () => {
-    const nomInput = screen.getByLabelText('Nom :');
-    fireEvent.blur(nomInput);
+  it('should display an error message when email is already in use', () => {
+    component.inscriptionForm.setValue({
+      nom: 'Dupont',
+      prenom: 'Jean',
+      email: 'jean.dupont@example.com',
+      dateNaissance: '2000-01-01',
+      ville: 'Paris',
+      codePostal: '75001'
+    });
+    fixture.detectChanges();
 
-    expect(await screen.findByText('Le nom est requis.')).toBeTruthy();
+    const submitButton = fixture.nativeElement.querySelector('button[type="submit"]');
+    submitButton.click();
+
+    const req = httpTestingController.expectOne('http://localhost:3000/api/users');
+    req.flush({ error: 'Cet email est déjà utilisé.' }, { status: 400, statusText: 'Bad Request' });
+
+    fixture.detectChanges();
+
+    const errorToast = document.querySelector('.toast-message');
+    expect(errorToast?.textContent).toContain('Cet email est déjà utilisé. Veuillez en choisir un autre.');
   });
 
-  it('should enable the submit button when the form is valid', async () => {
-    fireEvent.input(screen.getByLabelText('Nom :'), { target: { value: 'Dupont' } });
-    fireEvent.input(screen.getByLabelText('Prénom :'), { target: { value: 'Jean' } });
-    fireEvent.input(screen.getByLabelText('Email :'), { target: { value: 'jean.dupont@example.com' } });
-    fireEvent.input(screen.getByLabelText('Date de naissance :'), { target: { value: '2000-01-01' } });
-    fireEvent.input(screen.getByLabelText('Ville :'), { target: { value: 'Paris' } });
-    fireEvent.input(screen.getByLabelText('Code Postal :'), { target: { value: '75001' } });
+  it('should emit newUser event after successful user creation', () => {
+    jest.spyOn(component.newUser, 'emit');
 
-    const submitButton = screen.getByRole('button', { name: /Confirmer/i });
-    expect(submitButton.hasAttribute('disabled')).toBe(false);
-  });
+    component.inscriptionForm.setValue({
+      nom: 'Dupont',
+      prenom: 'Jean',
+      email: 'jean.dupont@example.com',
+      dateNaissance: '2000-01-01',
+      ville: 'Paris',
+      codePostal: '75001'
+    });
+    fixture.detectChanges();
 
-  it('should show an error message when the age is less than 18', async () => {
-    fireEvent.input(screen.getByLabelText('Nom :'), { target: { value: 'Dupont' } });
-    fireEvent.input(screen.getByLabelText('Prénom :'), { target: { value: 'Jean' } });
-    fireEvent.input(screen.getByLabelText('Email :'), { target: { value: 'jean.dupont@example.com' } });
-    fireEvent.input(screen.getByLabelText('Date de naissance :'), { target: { value: '2010-01-01' } });
-    fireEvent.input(screen.getByLabelText('Ville :'), { target: { value: 'Paris' } });
-    fireEvent.input(screen.getByLabelText('Code Postal :'), { target: { value: '75001' } });
+    const submitButton = fixture.nativeElement.querySelector('button[type="submit"]');
+    submitButton.click();
 
-    fireEvent.click(screen.getByRole('button', { name: /Confirmer/i }));
+    const req = httpTestingController.expectOne('http://localhost:3000/api/users');
+    req.flush({ message: 'Utilisateur créé avec succès' });
 
-    const errorMessage = await screen.findByText('Vous devez avoir au moins 18 ans.');
-    expect(errorMessage).toBeTruthy();
-  });
+    fixture.detectChanges();
 
-  it('should show a success toaster message on form submission', async () => {
-    fireEvent.input(screen.getByLabelText('Nom :'), { target: { value: 'Dupont' } });
-    fireEvent.input(screen.getByLabelText('Prénom :'), { target: { value: 'Jean' } });
-    fireEvent.input(screen.getByLabelText('Email :'), { target: { value: 'jean.dupont@example.com' } });
-    fireEvent.input(screen.getByLabelText('Date de naissance :'), { target: { value: '2000-01-01' } });
-    fireEvent.input(screen.getByLabelText('Ville :'), { target: { value: 'Paris' } });
-    fireEvent.input(screen.getByLabelText('Code Postal :'), { target: { value: '75001' } });
-
-    fireEvent.click(screen.getByRole('button', { name: /Confirmer/i }));
-
-    const toasterMessage = await screen.findByText('Inscription réussie !');
-    expect(toasterMessage).toBeTruthy();
+    expect(component.newUser.emit).toHaveBeenCalledWith({ message: 'Utilisateur créé avec succès' });
   });
 });
