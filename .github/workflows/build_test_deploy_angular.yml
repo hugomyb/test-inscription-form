@@ -1,4 +1,4 @@
-name: Build, Test and Deploy Angular Application
+name: Build, Test and Deploy Angular Application (Front)
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   test:
-    name: Run tests and collect coverage
+    name: Run tests and collect coverage (Front)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -17,11 +17,16 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
 
+      - name: Navigate to Frontend Directory
+        run: cd front
+
       - name: Install dependencies
         run: npm install
+        working-directory: front
 
       - name: Run tests
         run: npx jest --coverage
+        working-directory: front
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v4
@@ -29,6 +34,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   build_test:
+    name: Build, Test and Generate Documentation (Front)
     runs-on: ubuntu-latest
 
     strategy:
@@ -44,10 +50,12 @@ jobs:
 
       - name: Install dependencies, build, test, and generate docs
         run: |
+          cd front
           npm ci
           npm run build --if-present
           npm run test:coverage
           npm run doc
+        working-directory: front
 
       - name: Prepare deployment folder
         run: |
@@ -66,6 +74,7 @@ jobs:
           if-no-files-found: error
 
   deploy:
+    name: Deploy to GitHub Pages
     environment:
       name: github-pages
       url: ${{steps.deployment.output.page_url}}
