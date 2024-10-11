@@ -89,7 +89,7 @@ describe('InscriptionFormComponent', () => {
     const submitButton = fixture.nativeElement.querySelector('button[type="submit"]');
     submitButton.click();
 
-    const req = httpTestingController.expectOne('http://localhost:3000/api/users');
+    const req = httpTestingController.expectOne('http://https://back-psi-seven.vercel.app/api/users');
     req.flush({ message: 'Utilisateur créé avec succès' });
 
     fixture.detectChanges();
@@ -119,7 +119,7 @@ describe('InscriptionFormComponent', () => {
     const submitButton = fixture.nativeElement.querySelector('button[type="submit"]');
     submitButton.click();
 
-    const req = httpTestingController.expectOne('http://localhost:3000/api/users');
+    const req = httpTestingController.expectOne('http://https://back-psi-seven.vercel.app/api/users');
     req.flush({ message: 'Utilisateur créé avec succès' });
 
     fixture.detectChanges();
@@ -144,7 +144,7 @@ describe('InscriptionFormComponent', () => {
     const submitButton = fixture.nativeElement.querySelector('button[type="submit"]');
     submitButton.click();
 
-    const req = httpTestingController.expectOne('http://localhost:3000/api/users');
+    const req = httpTestingController.expectOne('http://https://back-psi-seven.vercel.app/api/users');
     req.flush({ message: 'Internal Server Error' }, { status: 500, statusText: 'Server Error' });
 
     fixture.detectChanges();
@@ -171,7 +171,7 @@ describe('InscriptionFormComponent', () => {
     const submitButton = fixture.nativeElement.querySelector('button[type="submit"]');
     submitButton.click();
 
-    const req = httpTestingController.expectOne('http://localhost:3000/api/users');
+    const req = httpTestingController.expectOne('http://https://back-psi-seven.vercel.app/api/users');
     req.flush({ error: 'Cet email est déjà utilisé.' }, { status: 400, statusText: 'Bad Request' });
 
     fixture.detectChanges();
@@ -196,7 +196,7 @@ describe('InscriptionFormComponent', () => {
     const submitButton = fixture.nativeElement.querySelector('button[type="submit"]');
     submitButton.click();
 
-    const req = httpTestingController.expectOne('http://localhost:3000/api/users');
+    const req = httpTestingController.expectOne('http://https://back-psi-seven.vercel.app/api/users');
     req.flush({ message: 'Utilisateur créé avec succès' });
 
     fixture.detectChanges();
