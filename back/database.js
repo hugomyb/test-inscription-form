@@ -5,7 +5,6 @@ const pool = new Pool({
     connectionString: process.env.POSTGRES_URL,
 });
 
-// Vérifie la connexion
 pool.connect((err) => {
     if (err) {
         console.error('Erreur lors de la connexion à la base de données PostgreSQL:', err);
