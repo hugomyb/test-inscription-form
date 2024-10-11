@@ -49,7 +49,6 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-    needs: deploy_backend
 
   build_test:
     name: Build, Test and Generate Documentation (Front)
@@ -89,7 +88,6 @@ jobs:
         with:
           path: deploy-root
           if-no-files-found: error
-    needs: deploy_backend
 
   deploy:
     name: Deploy to GitHub Pages
