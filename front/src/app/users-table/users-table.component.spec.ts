@@ -24,7 +24,7 @@ describe('UsersTableComponent', () => {
 
     fixture.detectChanges();
 
-    const req = httpTestingController.expectOne('http://https://back-psi-seven.vercel.app/api/users');
+    const req = httpTestingController.expectOne('https://back-psi-seven.vercel.app/api/users');
     req.flush([]);
   });
 
@@ -44,7 +44,7 @@ describe('UsersTableComponent', () => {
 
     component.fetchUsers();
 
-    const req = httpTestingController.expectOne('http://https://back-psi-seven.vercel.app/api/users');
+    const req = httpTestingController.expectOne('https://back-psi-seven.vercel.app/api/users');
     expect(req.request.method).toBe('GET');
     req.flush(mockUsers);
 
@@ -57,7 +57,7 @@ describe('UsersTableComponent', () => {
 
     component.fetchUsers();
 
-    const req = httpTestingController.expectOne('http://https://back-psi-seven.vercel.app/api/users');
+    const req = httpTestingController.expectOne('https://back-psi-seven.vercel.app/api/users');
     req.flush('Error fetching users', { status: 500, statusText: 'Server Error' });
 
     // Vérifie que console.error est appelé avec l'erreur appropriée
@@ -74,7 +74,7 @@ describe('UsersTableComponent', () => {
 
     component.ngOnInit();
 
-    const req = httpTestingController.expectOne('http://https://back-psi-seven.vercel.app/api/users');
+    const req = httpTestingController.expectOne('https://back-psi-seven.vercel.app/api/users');
     expect(req.request.method).toBe('GET');
 
     req.flush(mockUsers);
