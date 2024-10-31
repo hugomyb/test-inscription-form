@@ -54,9 +54,12 @@ jobs:
     name: Build, Test, Generate Documentation, and Publish to npm (Front)
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write  # Autorise les changements dans le dépôt
+
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [ 20.x ]
 
     steps:
       - uses: actions/checkout@v2
@@ -78,9 +81,23 @@ jobs:
           mkdir -p deploy-root
           cp -r front/dist/cours-1-1/browser/* deploy-root/
           cp -r front/docs deploy-root/docs
-          
+
       - name: Authenticate with npm
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: Increment version
+        run: |
+          echo 'const fs = require("fs"); const packageJson = require("./package.json"); const [major, minor, patch] = packageJson.version.split(".").map(Number); packageJson.version = `${major}.${minor}.${patch + 1}`; fs.writeFileSync("./package.json", JSON.stringify(packageJson, null, 2)); console.log(`New version: ${packageJson.version}`);' > increment-version.js
+          node increment-version.js
+        working-directory: front
+
+      - name: Commit version change
+        run: |
+          git add front/package.json
+          git commit -m "ci: bump package version"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and publish package on NPM 📦
         run: |
@@ -88,7 +105,6 @@ jobs:
           git config --global user.name "Hugo Mayonobe"
           cd front
           npm run build-npm
-          npm version patch --no-git-tag-version
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -101,7 +117,6 @@ jobs:
         uses: actions/upload-pages-artifact@v2
         with:
           path: deploy-root
-          if-no-files-found: error
 
   deploy:
     name: Deploy to GitHub Pages
