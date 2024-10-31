@@ -88,7 +88,8 @@ jobs:
           git config --global user.name "Hugo Mayonobe"
           npm run build-npm
           npm version patch --no-git-tag-version
-          npm publish
+          git diff package.json
+          npm publish --allow-same-version
         working-directory: front
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
