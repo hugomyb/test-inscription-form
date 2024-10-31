@@ -79,10 +79,7 @@ L'application principale est déployée à la racine (`/`) et la documentation e
 - `dist/` : Contient les fichiers construits de l'application après le build.
 - `docs/` : Contient la documentation générée par Typedoc.
 
-## Contribution
+## NPMJS
 
-Les contributions sont les bienvenues ! N'hésitez pas à ouvrir des problèmes (issues) ou à soumettre des pull requests pour améliorer le projet.
-
-## Licence
-
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus d'informations.
+Le front du projet est déployé automatiquement sur [npmjs.com](https://www.npmjs.com/package/cours-1-1?activeTab=readme) au moment du workflow à chaque push.
+Lors du workflow la version est automatiquement incrémentée sur npmjs et dans le package.json du front via un script js à la racine du dossier front (increment-version.js).
