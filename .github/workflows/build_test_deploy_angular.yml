@@ -78,6 +78,9 @@ jobs:
           mkdir -p deploy-root
           cp -r front/dist/cours-1-1/browser/* deploy-root/
           cp -r front/docs deploy-root/docs
+          
+      - name: Authenticate with npm
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
       - name: Build and publish package on NPM 📦
         run: |
