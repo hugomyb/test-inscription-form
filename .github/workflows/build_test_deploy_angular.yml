@@ -86,11 +86,10 @@ jobs:
         run: |
           git config --global user.email "hugomayonobe@gmail.com"
           git config --global user.name "Hugo Mayonobe"
+          cd front
           npm run build-npm
           npm version patch --no-git-tag-version
-          git diff package.json
-          npm publish --allow-same-version
-        working-directory: front
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
