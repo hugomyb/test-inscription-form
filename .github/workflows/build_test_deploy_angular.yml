@@ -83,6 +83,7 @@ jobs:
         run: |
           git config --global user.email "hugomayonobe@gmail.com"
           git config --global user.name "Hugo Mayonobe"
+          cd front
           npm run build-npm
           npm version patch
           npm publish
