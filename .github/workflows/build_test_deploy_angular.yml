@@ -87,8 +87,8 @@ jobs:
           git config --global user.email "hugomayonobe@gmail.com"
           git config --global user.name "Hugo Mayonobe"
           cd front
+          node increment-version.js
           npm run build-npm
-          npm version patch --no-git-tag-version
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
