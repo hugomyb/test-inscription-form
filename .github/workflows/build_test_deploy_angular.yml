@@ -87,7 +87,7 @@ jobs:
           git config --global user.email "hugomayonobe@gmail.com"
           git config --global user.name "Hugo Mayonobe"
           npm run build-npm
-          npm version patch
+          npm version patch --no-git-tag-version
           npm publish
         working-directory: front
         env:
