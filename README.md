@@ -68,6 +68,10 @@ Génère la documentation du projet à l'aide de [Typedoc](https://typedoc.org/)
 Ce projet est configuré pour être déployé sur GitHub Pages.
 L'application principale est déployée à la racine (`/`) et la documentation est déployée dans le sous-dossier `/docs`.
 
+## Déploiement BackEnd
+
+Le backend est déployé sur Vercel au moment du workflow, la bdd est également hébergée sur vercel.
+
 ## Routes de l'application
 
 - `/` : Page d'accueil de l'application.
