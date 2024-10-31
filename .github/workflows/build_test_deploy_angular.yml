@@ -82,14 +82,19 @@ jobs:
       - name: Authenticate with npm
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
+      - name: Increment version
+        run: |
+          echo "const fs = require('fs'); const packageJson = require('./package.json'); const [major, minor, patch] = packageJson.version.split('.').map(Number); packageJson.version = `${major}.${minor}.${patch + 1}`; fs.writeFileSync('./package.json', JSON.stringify(packageJson, null, 2)); console.log(`New version: ${packageJson.version}`);" > increment-version.js
+          node increment-version.js
+        working-directory: front
+
       - name: Build and publish package on NPM 📦
         run: |
           git config --global user.email "hugomayonobe@gmail.com"
           git config --global user.name "Hugo Mayonobe"
-          cd front
-          node increment-version.js
           npm run build-npm
           npm publish --access public
+        working-directory: front
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
