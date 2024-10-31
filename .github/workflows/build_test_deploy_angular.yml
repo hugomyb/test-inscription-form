@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write  # Autorise les changements dans le dépôt
+      contents: write
 
     strategy:
       matrix:
@@ -93,6 +93,8 @@ jobs:
 
       - name: Commit version change
         run: |
+          git config --global user.email "hugomayonobe@gmail.com"
+          git config --global user.name "Hugo Mayonobe"
           git add front/package.json
           git commit -m "ci: bump package version"
           git push
