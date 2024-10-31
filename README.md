@@ -75,6 +75,8 @@ L'application principale est déployée à la racine (`/`) et la documentation e
 
 ## Structure du Projet
 
+back
+front :
 - `src/` : Contient le code source de l'application Angular.
 - `dist/` : Contient les fichiers construits de l'application après le build.
 - `docs/` : Contient la documentation générée par Typedoc.
