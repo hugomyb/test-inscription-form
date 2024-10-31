@@ -51,7 +51,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   build_test:
-    name: Build, Test and Generate Documentation (Front)
+    name: Build, Test, Generate Documentation, and Publish to npm (Front)
     runs-on: ubuntu-latest
 
     strategy:
@@ -78,6 +78,17 @@ jobs:
           mkdir -p deploy-root
           cp -r front/dist/cours-1-1/browser/* deploy-root/
           cp -r front/docs deploy-root/docs
+
+      - name: Build and publish package on NPM 📦
+        run: |
+          git config --global user.email "loise.fenoll@ynov.com"
+          git config --global user.name "Loise Fenoll"
+          npm run build-npm
+          npm version patch
+          npm publish
+        working-directory: front
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Setup Pages
         id: pages
